@@ -1,4 +1,4 @@
-from typing import Protocol
+from typing import Protocol,Dict
 from enum import Enum, auto
 import random
 
@@ -53,7 +53,7 @@ class Matkritiker:
     def __init__(self, namn:str, erfarenhet:int) -> None:
         self.namn = namn
         self.erfarenhet = erfarenhet
-        self._kritiserade_maträtter = {}
+        self._kritiserade_maträtter:Dict[Maträtt, Dict[KritiseraEnum,TestPoängEnum]]  = {}
         self._test_poäng = list(TestPoängEnum)
 
     def kritisera_maträtt(self, test:KritiseraEnum, maträtt:Maträtt) -> None:
@@ -66,12 +66,22 @@ class Matkritiker:
             gjorda_tester[test] = random.choice(self._test_poäng)
 
         else:
-            self._kritiserade_maträtter[maträtt] = {test:random.choice(self._test_poäng)}
+            self._kritiserade_maträtter[maträtt]= {test:random.choice(self._test_poäng)}
 
 
     def klaga(self) -> str:
         return "Jag älskar att klaga på allt!!"
+    
+    def __str__(self) -> str:
+        alla_tester_sträng = f"{self.namn}:\n"
+        for maträtt, tester in self._kritiserade_maträtter.items():
+            alla_tester_sträng += f"\t{maträtt}:\n"
+            for test, poäng in tester.items():
+                alla_tester_sträng += f"\t\t{test.name} -> {poäng.value}\n"
 
+
+        return alla_tester_sträng
+        
 
 
 
@@ -91,7 +101,14 @@ if __name__ == "__main__":
 
     # Låt kritiken börja
     sebastian.kritisera_maträtt(kritisera('smak'), pylandia_pudding)
+    sebastian.kritisera_maträtt(kritisera('färg'), pylandia_pudding)
     sebastian.kritisera_maträtt(kritisera('smak'), bananbröd)
+    sebastian.kritisera_maträtt(kritisera('temperatur'), bananbröd)
 
     kalle.kritisera_maträtt(KritiseraEnum.SMAK, pylandia_pudding)
+    kalle.kritisera_maträtt(KritiseraEnum.FÄRG, pylandia_pudding)
     kalle.kritisera_maträtt(KritiseraEnum.SMAK, bananbröd)
+    kalle.kritisera_maträtt(KritiseraEnum.TEMPERATUR, bananbröd)
+
+    print(sebastian)
+    print(kalle)
